@@ -22,7 +22,7 @@ from copy import deepcopy
 from PPI_class import PPI, PPI_attn
 from sklearn.metrics import precision_score, recall_score, f1_score, precision_recall_fscore_support
 
-USE_CUDA = True
+USE_CUDA = False
 batch_size = 10
 no_epochs = 30
 n_class = 2
@@ -352,7 +352,7 @@ for k in range((len(TR))):
     
     ''' model initialize '''
     crit = nn.BCELoss()
-    model = PPI(len(vocab.word2index), len(vocab.pos2index), hidden_dim, embed_dim, n_class, USE_CUDA, crit)
+    model = PPI_attn(len(vocab.word2index), len(vocab.pos2index), hidden_dim, embed_dim, n_class, USE_CUDA, crit)
     model.load_embeddings(embed_tensor)
     if SGD == 1:
         optimizer = torch.optim.SGD(model.parameters(), lr = learning_rate, momentum = 0.9)
