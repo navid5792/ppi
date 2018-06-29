@@ -33,7 +33,7 @@ dropOut = 0.5
 lr_decay = 0.05
 clip = 5
 SGD = 0
-file = "LLL"
+file = "IEPA"
 logfile = "fscore_%s.txt" %file
 
 if SGD == 1:
@@ -369,10 +369,7 @@ for k in range(0,(len(TR))):
     num_of_batches = int(len(train)/ batch_size)
     epoch = 0
     ac_loss = []
-    max_precision = 0
-    max_recall = 0
-    max_f1 = 0
-    max_f1_epoch = 0
+
     while epoch < no_epochs:
         fscoreList = open(logfile, 'a')
         fscoreList.write('Fold ' + str(k + 1) + ' ')
@@ -380,6 +377,10 @@ for k in range(0,(len(TR))):
         cur_batch = 0
         total_loss = 0
         model.train(True)
+        max_precision = 0
+        max_recall = 0
+        max_f1 = 0
+        max_f1_epoch = 0
         while cur_batch < num_of_batches:
             optimizer.zero_grad()
             X, Y, P, T,  lengths = random_batch(cur_batch, train)
@@ -439,7 +440,7 @@ for k in range(0,(len(TR))):
     fscoreList.close()
     total_acu.append(f1)
     torch.cuda.empty_cache()
-#    weight_init()
+    weight_init()
    
 print('Mean Max Precision Scores: ', sum(max_precision_scores)/len(TR))
 print('Mean Max Recall Scores: ', sum(max_recall_scores)/len(TR))
