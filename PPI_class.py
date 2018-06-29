@@ -10,7 +10,7 @@ import torch.nn as nn
 #from torch.autograd import Variable
 from torch.nn.utils.rnn import pad_packed_sequence, pack_padded_sequence
 import torch.nn.functional as F
-from torchviz import make_dot, make_dot_from_trace
+#from torchviz import make_dot, make_dot_from_trace
 from tree import *
 from tree_lstm import *
 from copy import deepcopy

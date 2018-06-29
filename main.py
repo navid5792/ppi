@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from sklearn.metrics import f1_score,accuracy_score
 from utils import dataset_stat, ten_fold, make_train_test, add_space_punc
 from nltk import pos_tag
-from torchviz import make_dot, make_dot_from_trace
+#from torchviz import make_dot, make_dot_from_trace
 from tree import *
 from tree_lstm import *
 from copy import deepcopy
