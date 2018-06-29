@@ -33,7 +33,7 @@ dropOut = 0.5
 lr_decay = 0.05
 clip = 5
 SGD = 0
-file = "IEPA"
+file = "HPRD50"
 logfile = "fscore_%s.txt" %file
 
 if SGD == 1:
