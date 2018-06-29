@@ -22,7 +22,7 @@ from copy import deepcopy
 from PPI_class import PPI, PPI_attn
 from sklearn.metrics import precision_score, recall_score, f1_score, precision_recall_fscore_support
 
-USE_CUDA = False
+USE_CUDA = True
 batch_size = 10
 no_epochs = 30
 n_class = 2
@@ -343,11 +343,16 @@ def weight_init():
 
 
 
-for k in range(0,(len(TR))):
+max_f1_scores = []
+max_precision_scores = []
+max_recall_scores = []
+
+
+for k in range((len(TR))):
     
     ''' model initialize '''
     crit = nn.BCELoss()
-    model = PPI_attn(len(vocab.word2index), len(vocab.pos2index), hidden_dim, embed_dim, n_class, USE_CUDA, crit)
+    model = PPI(len(vocab.word2index), len(vocab.pos2index), hidden_dim, embed_dim, n_class, USE_CUDA, crit)
     model.load_embeddings(embed_tensor)
     if SGD == 1:
         optimizer = torch.optim.SGD(model.parameters(), lr = learning_rate, momentum = 0.9)
@@ -360,16 +365,15 @@ for k in range(0,(len(TR))):
         model.cuda()
     print(model)  
    
-    
-    max_f1_scores = []
-    max_precision_scores = []
-    max_recall_scores = []
     train = TR[k]
     test = TE[k]
     num_of_batches = int(len(train)/ batch_size)
     epoch = 0
     ac_loss = []
-
+    max_precision = 0
+    max_recall = 0
+    max_f1 = 0
+    max_f1_epoch = 0
     while epoch < no_epochs:
         fscoreList = open(logfile, 'a')
         fscoreList.write('Fold ' + str(k + 1) + ' ')
@@ -377,10 +381,7 @@ for k in range(0,(len(TR))):
         cur_batch = 0
         total_loss = 0
         model.train(True)
-        max_precision = 0
-        max_recall = 0
-        max_f1 = 0
-        max_f1_epoch = 0
+ 
         while cur_batch < num_of_batches:
             optimizer.zero_grad()
             X, Y, P, T,  lengths = random_batch(cur_batch, train)
@@ -440,8 +441,9 @@ for k in range(0,(len(TR))):
     fscoreList.close()
     total_acu.append(f1)
     torch.cuda.empty_cache()
-    weight_init()
+    #weight_init()
    
+print('Max F1 Scores: ', max_f1_scores)
 print('Mean Max Precision Scores: ', sum(max_precision_scores)/len(TR))
 print('Mean Max Recall Scores: ', sum(max_recall_scores)/len(TR))
 print('Mean Max F1 Scores: ', sum(max_f1_scores)/len(TR))
