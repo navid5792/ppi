@@ -1,0 +1,16 @@
+.idea/*
+Fscores/*
+Model.png
+PPI Corpora/*
+PubMed-shuffle-win-2.bin
+__pychache__/*
+data/*
+fscore_IEPA.txt
+bio_nlp_vec/*
+fscore_LLL.txt
+perfromance stats.txt
+result_IEPA.pkl
+results/*
+true pred/*
+true_pred_IEPA.pkl
+vocab and w2v/*
