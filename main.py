@@ -33,8 +33,8 @@ dropOut = 0.5
 lr_decay = 0.05
 clip = 5
 SGD = 0
-file = "AIMed"
-logfile = "fscore1-5_%s.txt" %file
+file = "HPRD50"
+logfile = "fscore_%s.txt" %file
 
 if SGD == 1:
     learning_rate = 0.015
@@ -352,7 +352,7 @@ for k in range(0, (len(TR))):
     
     ''' model initialize '''
     crit = nn.BCELoss()
-    model = PPI_attn(len(vocab.word2index), len(vocab.pos2index), hidden_dim, embed_dim, n_class, USE_CUDA, crit)
+    model = PPI(len(vocab.word2index), len(vocab.pos2index), hidden_dim, embed_dim, n_class, USE_CUDA, crit)
     model.load_embeddings(embed_tensor)
     if SGD == 1:
         optimizer = torch.optim.SGD(model.parameters(), lr = learning_rate, momentum = 0.9)
