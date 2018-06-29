@@ -9,7 +9,7 @@ import pickle
 import torch
 from gensim.models.keyedvectors import KeyedVectors
 model = KeyedVectors.load_word2vec_format('PubMed-shuffle-win-2.bin', binary=True)
-file = "HPRD50"
+file = "IEPA"
 with open("./vocab and w2v/vocab_%s.pkl" %file, "rb") as f:
     vocab = pickle.load(f)
 w2v = dict()
