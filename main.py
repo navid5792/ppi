@@ -33,7 +33,7 @@ dropOut = 0.5
 lr_decay = 0.05
 clip = 5
 SGD = 0
-file = "HPRD50"
+file = "LLL"
 logfile = "fscore_%s.txt" %file
 
 if SGD == 1:
@@ -348,7 +348,7 @@ max_precision_scores = []
 max_recall_scores = []
 
 
-for k in range((len(TR))):
+for k in range(7, (len(TR))):
     
     ''' model initialize '''
     crit = nn.BCELoss()
