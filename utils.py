@@ -15,7 +15,7 @@ from copy import deepcopy
 data = []
 labels = []
 parents = []
-file = "AIMed"
+file = "HPRD50"
 
 def dataset_stat():
     global data
