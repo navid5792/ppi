@@ -33,8 +33,8 @@ dropOut = 0.5
 lr_decay = 0.05
 clip = 5
 SGD = 0
-file = "IEPA"
-logfile = "fscore_%s.txt" %file
+file = "AIMed"
+logfile = "fscoreattn_%s.txt" %file
 
 if SGD == 1:
     learning_rate = 0.015
@@ -441,7 +441,7 @@ for k in range(0, (len(TR))):
     fscoreList.close()
     total_acu.append(f1)
     torch.cuda.empty_cache()
-    #weight_init()
+    weight_init()
    
 print('Max F1 Scores: ', max_f1_scores)
 print('Mean Max Precision Scores: ', sum(max_precision_scores)/len(TR))
