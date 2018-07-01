@@ -319,7 +319,8 @@ def evaluate(test):
     if f1 > best_f1:
         best_f1 = f1
         with open("./true pred/true_pred_%s.pkl" %file, "wb") as f:
-            pickle.dump([y_true, y_pred,true_sentence],f)            
+            pickle.dump([y_true, y_pred,true_sentence],f)    
+            torch.save(model.state_dict(),'model_%s' %file)
     model.train(True)
     return prec, reca, f1
 
@@ -348,7 +349,7 @@ max_precision_scores = []
 max_recall_scores = []
 
 
-for k in range(0, (len(TR))):
+for k in range(1, (len(TR))):
     
     ''' model initialize '''
     crit = nn.BCELoss()
@@ -360,7 +361,7 @@ for k in range(0, (len(TR))):
         optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate, weight_decay = 1e-5)
     
     #    crit = nn.NLLLoss(torch.tensor([0.7, 0.3]))
-    
+#    model.load_state_dict(torch.load('./saved_models/model_%s' %file))
     if USE_CUDA:
         model.cuda()
     print(model)  
