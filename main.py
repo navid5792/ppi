@@ -34,7 +34,7 @@ lr_decay = 0.05
 clip = 5
 SGD = 0
 file = "AIMed"
-logfile = "fscoreattn_%s.txt" %file
+logfile = "fscorewitht2-_%s.txt" %file
 
 if SGD == 1:
     learning_rate = 0.015
@@ -320,7 +320,7 @@ def evaluate(test):
         best_f1 = f1
         with open("./true pred/true_pred_%s.pkl" %file, "wb") as f:
             pickle.dump([y_true, y_pred,true_sentence],f)    
-            torch.save(model.state_dict(),'model_%s' %file)
+            torch.save(model.state_dict(),'./saved_models/model_%s' %file)
     model.train(True)
     return prec, reca, f1
 
