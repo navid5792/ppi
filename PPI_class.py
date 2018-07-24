@@ -180,7 +180,11 @@ class PPI_attn(nn.Module):
             tree_state = torch.zeros(x.size(1), self.hidden_dim)
             tree_hidden = torch.zeros(x.size(1), self.hidden_dim)
             maxlen = emb.size(0)
-            node_output = torch.zeros(emb.size(1), maxlen, self.hidden_dim).cuda() # 10 87 300 
+            if self.USE_CUDA:
+                node_output = torch.zeros(emb.size(1), maxlen, self.hidden_dim).cuda() # 10 87 300 
+            else:
+                node_output = torch.zeros(emb.size(1), maxlen, self.hidden_dim)
+                
     #        print(node_output.size(), output.size()) # 87 10 300 and 87 10 600
             for k in range (len(t)):
                 node_out = output.transpose(0,1)[k]
