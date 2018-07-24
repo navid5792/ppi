@@ -34,7 +34,7 @@ class PPI(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.w1 = nn.Parameter(torch.FloatTensor([1.0]))
         self.w2 = nn.Parameter(torch.FloatTensor([1.0]))
-#        self.childsumtreelstm = ChildSumTreeLSTM(self.embed_dim, self.hidden_dim)
+#        self.childsumtreelstm = ChildSumTreeLSTM(self.embed_dim, self.hidden_dim, self.USE_CUDA)
         self.childsumtreelstm = BinaryTreeLSTM( self.USE_CUDA ,self.embed_dim, self.hidden_dim)
     
     def load_embeddings(self, tensor):
