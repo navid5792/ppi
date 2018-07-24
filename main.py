@@ -24,7 +24,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, precision_r
 
 USE_CUDA = False
 batch_size = 10
-no_epochs = 100
+no_epochs = 50
 n_class = 2
 hidden_dim = 200
 embed_dim = 200
