@@ -44,10 +44,7 @@ else:
 with open("PPI Corpora/%s/sentences.toks" %file, "r") as f:
     data = f.readlines()
     
-#with open("PPI Corpora/%s/labels.txt" %file, "r") as f:
-#    labels  = f.readlines()
-
-   
+  
 class vocabulary:
     def __init__(self):
         self.word2index = {'PAD' : 0}
@@ -179,96 +176,6 @@ def random_batch(index, pairs):
     #print(USE_CUDA,tensor_data.type())
     #asdf
     return tensor_data.transpose(0,1), tensor_label, tensor_pos.transpose(0,1), current_tree, actual_length
-
-class AIMED(nn.Module):
-    def __init__(self, vocab_size, pos_vocab_size):
-        super(AIMED, self).__init__()
-        self.embed = nn.Embedding(vocab_size, embed_dim)
-        self.embed_pos = nn.Embedding(pos_vocab_size, embed_dim)
-        self.LSTM = nn.LSTM(embed_dim, hidden_dim, num_layers = n_layer, dropout = dropOut, bidirectional = True )
-        self.out = nn.Linear(hidden_dim * 1, n_class)
-        self.drop = nn.Dropout(p = 0.1)
-        self.sigmoid = nn.Sigmoid()
-        self.w1 = nn.Parameter(torch.FloatTensor([1.0]))
-        self.w2 = nn.Parameter(torch.FloatTensor([1.0]))
-        self.childsumtreelstm = ChildSumTreeLSTM(embed_dim, hidden_dim)
-    
-    def load_embeddings(self, tensor):
-        self.embed.weight = nn.Parameter(tensor)
-    
-    def forward(self, x, y, p, t, lengths, hidden = None, hidden_pos = None, mode = "train"):
-        emb = self.embed(x)
-        emb = self.drop(emb)
-        
-        ''' dependency tree embedding '''
-        tree_state = torch.zeros(x.size(1), hidden_dim)
-        tree_hidden = torch.zeros(x.size(1), hidden_dim)
-        for k in range (len(t)):
-            t_state, t_hidden = self.childsumtreelstm(t[k], emb.transpose(0,1)[k].squeeze(0)) 
-            tree_state[k] = t_state
-            tree_hidden[k] = t_hidden
-        tree_out = torch.cat([tree_state, tree_hidden], 1)
-                   
-        ''' word section '''
-        packed = pack_padded_sequence(emb, lengths)
-        output, hidden = self.LSTM(packed, hidden)
-        output, out_lengths = pad_packed_sequence(output)
-        output = output[:,:,:hidden_dim] + output[:,:,hidden_dim:]
-
-#        final_out = self.out(output[-1,:,:])
-#        final_out = self.sigmoid(final_out)
-        '''pos section'''
-        emb_pos = self.embed_pos(p)
-        emb_pos = self.drop(emb_pos)
-        packed_pos = pack_padded_sequence(emb_pos, lengths)
-        output_pos, hidden_pos = self.LSTM(packed_pos, hidden_pos)
-        output_pos, out_lengths = pad_packed_sequence(output_pos)
-        output_pos = output_pos[:,:,:hidden_dim] + output_pos[:,:,hidden_dim:]
-        
-#        ''' dependency POS '''
-#        tree_state_pos = torch.zeros(x.size(1), hidden_dim)
-#        tree_hidden_pos = torch.zeros(x.size(1), hidden_dim)
-#        for k in range (len(t)):
-#            t_state_pos, t_hidden_pos = self.childsumtreelstm(t[k], emb_pos.transpose(0,1)[k].squeeze(0)) 
-#            tree_state_pos[k] = t_state_pos
-#            tree_hidden_pos[k] = t_hidden_pos
-#        tree_out_pos = torch.cat([tree_state_pos, tree_hidden_pos], 1)
-        
-        ''' pick the last hidden '''
-        final_hidden = hidden[0][:].transpose(0,1).contiguous().view(emb.size(1),-1)
-        final_hidden_pos = hidden_pos[0][:].transpose(0,1).contiguous().view(emb.size(1),-1)
-        
-        ''' apply W's '''
-#        final_out = self.w1 * final_hidden + self.w2 * final_hidden_pos
-        
-#        tree_out_ = self.w1 * tree_hidden + self.w2 * tree_hidden_pos
-        
-        ''' Final FC and argmax '''
-        if USE_CUDA:
-            tree_out = tree_out.cuda()
-            tree_state = tree_state.cuda()
-            tree_hidden = tree_hidden.cuda()
-#            tree_out_pos = tree_out_pos.cuda()
-#            tree_state_pos = tree_state_pos.cuda()
-#            tree_hidden_pos = tree_hidden_pos.cuda()
-#            
-#        final_out = self.out(tree_out)
-        final_out = self.out(torch.cat([tree_hidden],1))
-        final_out = F.logsoftmax(final_out,1)
-        a,b = final_out.topk(1)
-
-        if USE_CUDA:
-            pred = torch.cuda.FloatTensor(a)
-        else:
-            pred = torch.FloatTensor(a)
-        if mode == "test":
-            return b
-        true = y
-        #print(final_out.cpu().type(),true.cpu().long().transpose(0,1).type())
-#        loss = crit(final_out.cpu(),true.cpu().long().squeeze(1))
-        loss = crit(pred, true)
-        return loss
-
 
 best_f1 = -1
 def evaluate(test):
