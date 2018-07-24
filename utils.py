@@ -15,7 +15,7 @@ from copy import deepcopy
 data = []
 labels = []
 parents = []
-file = "AIMed"
+file = "IEPA"
 
 def dataset_stat():
     global data
@@ -96,6 +96,15 @@ def make_train_test():
     TE = []
     z_l, o_l = dataset_stat()
     tr, te = stratified_fold()
+    
+#    tr = []
+#    te = []
+#    for i in range(len(data)):
+#        tr.append(i)
+#        te.append(i)
+#    tr = [tr]
+#    te = [te]
+    
     for j in range(len(tr)):
         train = []
         test = []

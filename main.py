@@ -24,17 +24,17 @@ from sklearn.metrics import precision_score, recall_score, f1_score, precision_r
 
 USE_CUDA = False
 batch_size = 10
-no_epochs = 30
+no_epochs = 100
 n_class = 2
-hidden_dim = 300
+hidden_dim = 200
 embed_dim = 200
 n_layer = 1
 dropOut = 0.5
 lr_decay = 0.05
 clip = 5
 SGD = 0
-file = "AIMed"
-logfile = "fscorewitht2-_%s.txt" %file
+file = "IEPA"
+logfile = "childsumattn%s.txt" %file
 
 if SGD == 1:
     learning_rate = 0.015
@@ -112,8 +112,7 @@ def dump_load_data(mode):
         print("data loaded")
 
 load_pretrained_vector()
-dump_load_data(0)   
-
+dump_load_data(1) 
 
 def random_batch(index, pairs):
     ''' This will return  X tensor, Y tensor, length of X'''
@@ -320,7 +319,7 @@ def evaluate(test):
         best_f1 = f1
         with open("./true pred/true_pred_%s.pkl" %file, "wb") as f:
             pickle.dump([y_true, y_pred,true_sentence],f)    
-            torch.save(model.state_dict(),'./saved_models/model_%s' %file)
+            torch.save(model.state_dict(),'./saved_models/modelwith-_%s' %file)
     model.train(True)
     return prec, reca, f1
 
@@ -339,18 +338,23 @@ def weight_init():
         else:
             print(x[0], " initialized")
             x[1].data = torch.randn(x[1].size())
+        
+        model.load_embeddings(embed_tensor)
+        if SGD == 1:
+            optimizer = torch.optim.SGD(model.parameters(), lr = learning_rate, momentum = 0.9)
+        else:
+            optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate, weight_decay = 1e-5)
+    
         if USE_CUDA:
             model.cuda()
-
-
+    
 
 max_f1_scores = []
 max_precision_scores = []
 max_recall_scores = []
 
 
-for k in range(1, (len(TR))):
-    
+for k in range(0,len(TR)):
     ''' model initialize '''
     crit = nn.BCELoss()
     model = PPI_attn(len(vocab.word2index), len(vocab.pos2index), hidden_dim, embed_dim, n_class, USE_CUDA, crit)
@@ -361,10 +365,12 @@ for k in range(1, (len(TR))):
         optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate, weight_decay = 1e-5)
     
     #    crit = nn.NLLLoss(torch.tensor([0.7, 0.3]))
-#    model.load_state_dict(torch.load('./saved_models/model_%s' %file))
+    #    model.load_state_dict(torch.load('./saved_models/modelwith_AIMed'))
     if USE_CUDA:
         model.cuda()
     print(model)  
+
+
    
     train = TR[k]
     test = TE[k]
@@ -434,6 +440,10 @@ for k in range(1, (len(TR))):
         with open("./results/result_%s.pkl" %file, "wb") as f:
             pickle.dump(ac_loss,f)
         epoch += 1
+        
+    prec, recall, f1 = evaluate(test)
+    print("precision: ", prec, "recall: ", recall, "f1: ", f1)
+    
     fscoreList = open(logfile, 'a')
     max_precision_scores.append(max_precision)
     max_recall_scores.append(max_recall)
