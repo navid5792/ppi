@@ -15,7 +15,7 @@ from copy import deepcopy
 data = []
 labels = []
 parents = []
-file = "AIMed"
+file = "HPRD50"
 
 def dataset_stat():
     global data
@@ -27,7 +27,7 @@ def dataset_stat():
     with open("PPI Corpora/%s/labels.txt" % file, "r") as f:
         labels  = f.readlines()
     
-    with open("PPI Corpora/%s/sentences.parents" % file, "r") as f:
+    with open("PPI Corpora/%s/sentences.cparents" % file, "r") as f:
         parents  = f.readlines()
     Z = 0
     O = 0

@@ -109,7 +109,7 @@ class PPI(nn.Module):
 class PPI_attn(nn.Module):
     def __init__(self, vocab_size, pos_vocab_size, hidden_dim, embed_dim, n_class, cuda, crit):
         super(PPI_attn, self).__init__()
-        self.childsum = True
+        self.childsum = False
         self.hidden_dim = hidden_dim
         self.embed_dim = embed_dim
         self.n_class = n_class

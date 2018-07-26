@@ -24,7 +24,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, precision_r
 
 USE_CUDA = False
 batch_size = 10
-no_epochs = 50
+no_epochs = 100
 n_class = 2
 hidden_dim = 200
 embed_dim = 200
@@ -33,8 +33,8 @@ dropOut = 0.5
 lr_decay = 0.05
 clip = 5
 SGD = 0
-file = "AIMed"
-logfile = "childsumattn%s.txt" %file
+file = "HPRD50"
+logfile = "bin attn attn %s.txt" %file
 
 if SGD == 1:
     learning_rate = 0.015

@@ -189,6 +189,7 @@ class BinaryTreeComposer(nn.Module):
         self.Wh = nn.Linear(mem_dim,mem_dim)
         self.Us = nn.Linear(mem_dim,mem_dim)
         self.map_alpha = nn.Linear(mem_dim, mem_dim)
+        self.child_lstm = nn.LSTM(mem_dim, mem_dim)
         
         if self.cudaFlag:
             self.ilh = self.ilh.cuda()
@@ -200,8 +201,15 @@ class BinaryTreeComposer(nn.Module):
             self.ulh = self.ulh.cuda()
 
     def forward(self, lc, lh , rc, rh, S):
+        
+        lh = lh.view(-1)
+        rh = rh.view(-1)
 #        print(lc.size(), lh.size(), rc.size(), rh.size(), S.size()) #  300 300 300 300 300
-    
+        hidden = None
+        _, hidden = self.child_lstm(torch.cat([lh.unsqueeze(0).unsqueeze(0),rh.unsqueeze(0).unsqueeze(0)], 0)) 
+        
+        S = hidden[0].squeeze(0).squeeze(0)
+
         ''' weight for child 1'''
         m_left = F.tanh(self.Wh(lh) + self.Us(S)).squeeze()
 
@@ -307,7 +315,7 @@ class BinaryTreeLSTM(nn.Module):
         self.criterion = nn.BCELoss()
 
         self.leaf_module = BinaryTreeLeafModule(cuda,in_dim, mem_dim)
-        self.composer = BinaryTreeComposer_noattn(cuda, in_dim, mem_dim)
+        self.composer = BinaryTreeComposer(cuda, in_dim, mem_dim)
         self.output_module = None
 
     def set_output_module(self, output_module):
